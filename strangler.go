@@ -1,10 +1,12 @@
 package eventstrangler
 
 type Config struct {
+	InstanceName string
 }
 
 type Strangler struct {
-	store *Store
+	config *Config
+	store  *Store
 }
 
 func (s *Strangler) Once() (bool, error) {
@@ -20,5 +22,8 @@ func NewStrangler(config *Config) (*Strangler, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Strangler{store}, nil
+	return &Strangler{
+		config: config,
+		store:  store,
+	}, nil
 }
