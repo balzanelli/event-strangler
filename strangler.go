@@ -47,9 +47,9 @@ func (e IdentifierKeyNotFound) Error() string {
 const IdentifierKey = "transaction_id"
 
 func (s *Strangler) getIdentifierKey(dict map[string]interface{}) ([]byte, error) {
-	if transactionID, exists := dict[IdentifierKey]; exists {
+	if identifierKey, exists := dict[IdentifierKey]; exists {
 		var buffer bytes.Buffer
-		if err := gob.NewEncoder(&buffer).Encode(transactionID); err != nil {
+		if err := gob.NewEncoder(&buffer).Encode(identifierKey); err != nil {
 			return nil, err
 		}
 		return buffer.Bytes(), nil
