@@ -6,20 +6,12 @@ import (
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
-type StoreEventError struct {
+type StoreEventNotFoundError struct {
 	HashKey string
 }
 
-func (e StoreEventError) Error() string {
+func (e StoreEventNotFoundError) Error() string {
 	return fmt.Sprintf("Hash Key '%s' Not Found", e.HashKey)
-}
-
-type StoreEventNotFoundError struct {
-	StoreEventError
-}
-
-type StoreEventAlreadyExistsError struct {
-	StoreEventError
 }
 
 type Store struct {
@@ -27,38 +19,25 @@ type Store struct {
 }
 
 func (s *Store) Exists(hashKey string) (bool, error) {
-	iter := s.db.NewIterator(nil, nil)
-	defer iter.Release()
-	return iter.Seek([]byte(hashKey)), nil
+	return s.db.Has([]byte(hashKey), nil)
 }
 
-func (s *Store) GetEvent(hashKey string) (*Record, error) {
-	iter := s.db.NewIterator(nil, nil)
-	defer iter.Release()
-	if !iter.Seek([]byte(hashKey)) {
+func (s *Store) Get(hashKey string) (*Record, error) {
+	value, err := s.db.Get([]byte(hashKey), nil)
+	if err != nil {
 		return nil, StoreEventNotFoundError{
-			StoreEventError{HashKey: hashKey},
+			HashKey: hashKey,
 		}
 	}
 
 	var record Record
-	if err := json.Unmarshal(iter.Value(), &record); err != nil {
+	if err := json.Unmarshal(value, &record); err != nil {
 		return nil, err
 	}
 	return &record, nil
 }
 
-func (s *Store) PutEvent(hashKey string, record *Record) error {
-	exists, err := s.Exists(hashKey)
-	if err != nil {
-		return err
-	}
-	if exists {
-		return StoreEventAlreadyExistsError{
-			StoreEventError{HashKey: hashKey},
-		}
-	}
-
+func (s *Store) Put(hashKey string, record *Record) error {
 	serialized, err := json.Marshal(record)
 	if err != nil {
 		return err
@@ -66,7 +45,7 @@ func (s *Store) PutEvent(hashKey string, record *Record) error {
 	return s.db.Put([]byte(hashKey), serialized, nil)
 }
 
-func (s *Store) DeleteEvent(hashKey string) error {
+func (s *Store) Delete(hashKey string) error {
 	return s.db.Delete([]byte(hashKey), nil)
 }
 
