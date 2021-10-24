@@ -18,11 +18,11 @@ func readJson(fileName string) (*map[string]interface{}, error) {
 		return nil, err
 	}
 
-	var dict map[string]interface{}
-	if err = json.Unmarshal(bytes, &dict); err != nil {
+	var object map[string]interface{}
+	if err = json.Unmarshal(bytes, &object); err != nil {
 		return nil, err
 	}
-	return &dict, nil
+	return &object, nil
 }
 
 func main() {
@@ -32,25 +32,32 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	config := &eventstrangler.Config{
-		InstanceName:      "event-strangler/examples/leveldb",
-		HashKeyExpression: "[subject, transaction_id]",
-	}
-	strangler, err := eventstrangler.NewStrangler(leveldb, config)
+	
+	strangler, err := eventstrangler.NewStrangler(leveldb, &eventstrangler.Config{
+		HashKey: &eventstrangler.HashKeyOptions{
+			Name:       "event-strangler/examples/leveldb",
+			Expression: "[subject, transaction_id]",
+		},
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	dict, err := readJson("test.json")
+	object, err := readJson("test.json")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	hashKey, err := strangler.Once(*dict)
+	hashKey, err := strangler.Once(*object)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// Run Idempotent Operation
+
+	//if err = strangler.Fail(hashKey); err != nil {
+	//	log.Fatal(err)
+	//}
 	if err = strangler.Complete(hashKey); err != nil {
 		log.Fatal(err)
 	}
