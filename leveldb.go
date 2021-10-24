@@ -47,8 +47,8 @@ func (s *LevelDBStore) Close() error {
 	return nil
 }
 
-func NewLevelDBStore() (*LevelDBStore, error) {
-	db, err := leveldb.OpenFile("./tmp/strangler.db", nil)
+func NewLevelDBStore(filePath string) (*LevelDBStore, error) {
+	db, err := leveldb.OpenFile(filePath, nil)
 	if err != nil {
 		return nil, err
 	}
