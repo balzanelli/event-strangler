@@ -23,9 +23,10 @@ func (e EventAlreadyProcessedError) Error() string {
 	return fmt.Sprintf("Event With Hash Key '%s' Has Already Been Processed", e.HashKey)
 }
 
-type StoreNotFoundError struct {
+type InvalidConfigurationError struct {
+	Message string
 }
 
-func (e StoreNotFoundError) Error() string {
-	return "Store Not Found"
+func (e InvalidConfigurationError) Error() string {
+	return fmt.Sprintf("Invalid Strangler Configuration: %s", e.Message)
 }
