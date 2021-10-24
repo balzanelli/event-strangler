@@ -5,8 +5,8 @@ import "time"
 type RecordState string
 
 const (
-	ProcessingRecordState RecordState = "processing"
-	CompleteRecordState   RecordState = "complete"
+	ProcessingRecordState RecordState = "PROCESSING"
+	CompleteRecordState   RecordState = "COMPLETE"
 )
 
 type Record struct {
