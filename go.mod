@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/jmespath/go-jmespath v0.4.0
+	github.com/karlseguin/ccache/v2 v2.0.8
 	github.com/syndtr/goleveldb v1.0.0
 )
 
