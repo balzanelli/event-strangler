@@ -14,7 +14,7 @@ func (s *LevelDBStore) Exists(hashKey string) (bool, error) {
 }
 
 func (s *LevelDBStore) Get(hashKey string) (*Record, error) {
-	value, err := s.db.Get([]byte(hashKey), nil)
+	item, err := s.db.Get([]byte(hashKey), nil)
 	if err != nil {
 		return nil, StoreEventNotFoundError{
 			HashKey: hashKey,
@@ -22,13 +22,13 @@ func (s *LevelDBStore) Get(hashKey string) (*Record, error) {
 	}
 
 	var record Record
-	if err := json.Unmarshal(value, &record); err != nil {
+	if err := json.Unmarshal(item, &record); err != nil {
 		return nil, err
 	}
 	return &record, nil
 }
 
-func (s *LevelDBStore) Put(hashKey string, record *Record) error {
+func (s *LevelDBStore) Put(hashKey string, record *Record, _ int) error {
 	serialized, err := json.Marshal(record)
 	if err != nil {
 		return err
