@@ -28,12 +28,16 @@ func readJson(fileName string) (*map[string]interface{}, error) {
 func main() {
 	log.Println("event-strangler/examples/leveldb@v0.1.0")
 
+	leveldb, err := eventstrangler.NewLevelDBStore()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	config := &eventstrangler.Config{
 		InstanceName:      "event-strangler/examples/leveldb",
 		HashKeyExpression: "[subject, transaction_id]",
 	}
-
-	strangler, err := eventstrangler.NewStrangler(config)
+	strangler, err := eventstrangler.NewStrangler(leveldb, config)
 	if err != nil {
 		log.Fatal(err)
 	}

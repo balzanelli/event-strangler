@@ -104,10 +104,9 @@ func (s *Strangler) getHashKey(identifierKey []byte) (string, error) {
 	return hex.EncodeToString(hash.Sum(nil)), nil
 }
 
-func NewStrangler(config *Config) (*Strangler, error) {
-	store, err := NewStore()
-	if err != nil {
-		return nil, err
+func NewStrangler(store Store, config *Config) (*Strangler, error) {
+	if store == nil {
+		return nil, StoreNotFoundError{}
 	}
 	return &Strangler{
 		Config: config,
