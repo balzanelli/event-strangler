@@ -28,23 +28,17 @@ func (r *Record) isExpired() bool {
 	return r.ExpiresAt.After(time.Now().UTC())
 }
 
-func getRecordExpirationTime(currentTime time.Time, timeToLive *time.Duration) time.Time {
-	var duration time.Duration
-	if timeToLive != nil {
-		duration = time.Second * *timeToLive
-	} else {
-		duration = time.Hour * 1
-	}
-	return currentTime.Add(duration)
+func getExpirationDate(currentTime time.Time, timeToLive int) time.Time {
+	return currentTime.Add(getTimeToLive(timeToLive))
 }
 
-func newRecord(hashKey string, timeToLive *time.Duration) *Record {
+func newRecord(hashKey string, timeToLive int) *Record {
 	currentTime := time.Now().UTC()
 
 	return &Record{
 		HashKey:   hashKey,
 		Status:    ProcessingRecordState,
 		CreatedAt: currentTime,
-		ExpiresAt: getRecordExpirationTime(currentTime, timeToLive),
+		ExpiresAt: getExpirationDate(currentTime, timeToLive),
 	}
 }
