@@ -1,9 +1,6 @@
 # JetBrains
 .idea/
 
-# Temporary Files
-tmp/
-
 # Binaries for programs and plugins
 *.exe
 *.exe~
