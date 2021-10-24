@@ -224,11 +224,11 @@ func Strangler_Complete(strangler C.uintptr_t, hash_key *C.const_char) *C.char {
 	return nil
 }
 
-//export Strangler_Fail
-func Strangler_Fail(strangler C.uintptr_t, hash_key *C.const_char) *C.char {
+//export Strangler_Purge
+func Strangler_Purge(strangler C.uintptr_t, hash_key *C.const_char) *C.char {
 	k := C.GoString(hash_key)
 	err := cgo.Handle(strangler).Value().(*eventstrangler.Strangler).
-		Fail(k)
+		Purge(k)
 	if err != nil {
 		return C.CString(err.Error())
 	}

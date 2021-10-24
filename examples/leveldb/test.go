@@ -56,7 +56,7 @@ func main() {
 
 	// Run Idempotent Operation
 
-	//if err = strangler.Fail(hashKey); err != nil {
+	//if err = strangler.Purge(hashKey); err != nil {
 	//	log.Fatal(err)
 	//}
 	if err = strangler.Complete(hashKey); err != nil {

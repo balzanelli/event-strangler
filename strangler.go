@@ -72,9 +72,9 @@ func (s *Strangler) Complete(hashKey string) error {
 	return nil
 }
 
-// Fail expunges the idempotency key from the idempotency store. This allows the
+// Purge expunges the idempotency key from the idempotency store. This allows the
 // event to be processed by future invocations.
-func (s *Strangler) Fail(hashKey string) error {
+func (s *Strangler) Purge(hashKey string) error {
 	return s.store.Delete(hashKey)
 }
 
