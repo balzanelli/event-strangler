@@ -17,6 +17,7 @@ func readJson(fileName string) (*map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	var dict map[string]interface{}
 	if err = json.Unmarshal(bytes, &dict); err != nil {
 		return nil, err
@@ -28,7 +29,8 @@ func main() {
 	log.Println("event-strangler/examples/leveldb@v0.1.0")
 
 	config := &eventstrangler.Config{
-		InstanceName: "event-strangler/examples/leveldb",
+		InstanceName:      "event-strangler/examples/leveldb",
+		HashKeyExpression: "[subject, transaction_id]",
 	}
 
 	strangler, err := eventstrangler.NewStrangler(config)
@@ -41,8 +43,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	_, err = strangler.Once(*dict)
+	hashKey, err := strangler.Once(*dict)
 	if err != nil {
 		log.Fatal(err)
 	}
+	if err = strangler.Complete(hashKey); err != nil {
+		log.Fatal(err)
+	}
+	log.Println(hashKey)
 }
