@@ -20,20 +20,20 @@ func getHashKeyName(opt *HashKeyOptions) (bool, string) {
 	return false, ""
 }
 
-func getIdempotentKey(object map[string]interface{}, opt *HashKeyOptions) ([]byte, error) {
-	var idempotentKey interface{}
+func getIdempotencyKey(object map[string]interface{}, opt *HashKeyOptions) ([]byte, error) {
+	var idempotencyKey interface{}
 	if opt != nil && len(opt.Expression) != 0 {
 		result, err := jmespath.Search(opt.Expression, object)
 		if err != nil {
 			return nil, err
 		}
-		idempotentKey = result
+		idempotencyKey = result
 	} else {
-		idempotentKey = object
+		idempotencyKey = object
 	}
 
 	var buffer bytes.Buffer
-	if err := gob.NewEncoder(&buffer).Encode(idempotentKey); err != nil {
+	if err := gob.NewEncoder(&buffer).Encode(idempotencyKey); err != nil {
 		return nil, err
 	}
 	return buffer.Bytes(), nil
@@ -46,11 +46,11 @@ func getHashKey(object map[string]interface{}, opt *HashKeyOptions) (string, err
 			return "", err
 		}
 	}
-	idempotentKey, err := getIdempotentKey(object, opt)
+	idempotencyKey, err := getIdempotencyKey(object, opt)
 	if err != nil {
 		return "", nil
 	}
-	if _, err := hash.Write(idempotentKey); err != nil {
+	if _, err := hash.Write(idempotencyKey); err != nil {
 		return "", nil
 	}
 	return hex.EncodeToString(hash.Sum(nil)), nil
