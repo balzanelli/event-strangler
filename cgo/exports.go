@@ -4,25 +4,25 @@ package main
 #include <stdint.h>
 #include <stdlib.h>
 
-struct strangler_record {
-    char* hash_key;
-    char* status;
-    char* created_at;
-    char* expires_at;
+struct EventStranglerRecord {
+    char* HashKey;
+    char* Status;
+    char* CreatedAt;
+    char* ExpiresAt;
 };
-typedef struct strangler_record strangler_record;
+typedef struct EventStranglerRecord EventStranglerRecord;
 
-struct strangler_hash_key_options {
-	char* name;
-	char* expression;
+struct EventStranglerHashKeyOptions {
+	char* Name;
+	char* Expression;
 };
-typedef struct strangler_hash_key_options strangler_hash_key_options;
+typedef struct EventStranglerHashKeyOptions EventStranglerHashKeyOptions;
 
-struct strangler_config {
-	strangler_hash_key_options* hash_key;
-	uintptr_t			  	    store;
+struct EventStranglerConfig {
+	EventStranglerHashKeyOptions* HashKey;
+	uintptr_t			  	      Store;
 };
-typedef struct strangler_config strangler_config;
+typedef struct EventStranglerConfig EventStranglerConfig;
 */
 import "C"
 import (
@@ -32,39 +32,34 @@ import (
 	"unsafe"
 )
 
-func RecordToCType(record *eventstrangler.Record) *C.struct_strangler_record {
-	result := (*C.struct_strangler_record)(C.malloc(C.size_t(unsafe.Sizeof(C.struct_strangler_record{}))))
-	result.hash_key = C.CString(record.HashKey)
-	result.status = C.CString(string(record.Status))
-	result.created_at = C.CString(record.CreatedAt.String())
-	result.expires_at = C.CString(record.ExpiresAt.String())
+func RecordToCType(record *eventstrangler.Record) *C.struct_EventStranglerRecord {
+	result := (*C.struct_EventStranglerRecord)(C.malloc(C.size_t(unsafe.Sizeof(C.struct_EventStranglerRecord{}))))
+	result.HashKey = C.CString(record.HashKey)
+	result.Status = C.CString(string(record.Status))
+	result.CreatedAt = C.CString(record.CreatedAt.String())
+	result.ExpiresAt = C.CString(record.ExpiresAt.String())
 	return result
 }
 
-func RecordToGoType(record *C.struct_strangler_record) (*eventstrangler.Record, error) {
-	createdAt, err := time.Parse(time.RFC3339, C.GoString(record.created_at))
+func RecordToGoType(record *C.struct_EventStranglerRecord) (*eventstrangler.Record, error) {
+	createdAt, err := time.Parse(time.RFC3339, C.GoString(record.CreatedAt))
 	if err != nil {
 		return nil, err
 	}
-	expiresAt, err := time.Parse(time.RFC3339, C.GoString(record.expires_at))
+	expiresAt, err := time.Parse(time.RFC3339, C.GoString(record.ExpiresAt))
 	if err != nil {
 		return nil, err
 	}
 	return &eventstrangler.Record{
-		HashKey:   C.GoString(record.hash_key),
-		Status:    eventstrangler.RecordState(C.GoString(record.status)),
+		HashKey:   C.GoString(record.HashKey),
+		Status:    eventstrangler.RecordState(C.GoString(record.Status)),
 		CreatedAt: createdAt,
 		ExpiresAt: expiresAt,
 	}, nil
 }
 
-//export strangler_record_free
-func strangler_record_free(record *C.struct_strangler_record) {
-	C.free(unsafe.Pointer(record))
-}
-
-//export strangler_leveldb_store_new
-func strangler_leveldb_store_new(filepath *C.char) (C.uintptr_t, *C.char) {
+//export EventStranglerLevelDBStoreNew
+func EventStranglerLevelDBStoreNew(filepath *C.char) (C.uintptr_t, *C.char) {
 	f := C.GoString(filepath)
 	leveldb, err := eventstrangler.NewLevelDBStore(f)
 	if err != nil {
@@ -73,25 +68,25 @@ func strangler_leveldb_store_new(filepath *C.char) (C.uintptr_t, *C.char) {
 	return C.uintptr_t(cgo.NewHandle(leveldb)), nil
 }
 
-//export strangler_leveldb_store_free
-func strangler_leveldb_store_free(leveldb C.uintptr_t) {
-	cgo.Handle(leveldb).Delete()
+//export EventStranglerLevelDBStoreFree
+func EventStranglerLevelDBStoreFree(levelDB C.uintptr_t) {
+	cgo.Handle(levelDB).Delete()
 }
 
-//export strangler_lru_cache_store_new
-func strangler_lru_cache_store_new() C.uintptr_t {
+//export EventStranglerLRUCacheStoreNew
+func EventStranglerLRUCacheStoreNew() C.uintptr_t {
 	lru := eventstrangler.NewLRUCacheStore()
 	return C.uintptr_t(cgo.NewHandle(lru))
 }
 
-//export strangler_lru_cache_store_free
-func strangler_lru_cache_store_free(lru C.uintptr_t) {
+//export EventStranglerLRUCacheStoreFree
+func EventStranglerLRUCacheStoreFree(lru C.uintptr_t) {
 	cgo.Handle(lru).Delete()
 }
 
-//export strangler_store_exists
-func strangler_store_exists(store C.uintptr_t, hash_key *C.char) (bool, *C.char) {
-	k := C.GoString(hash_key)
+//export EventStranglerStoreExists
+func EventStranglerStoreExists(store C.uintptr_t, hashKey *C.char) (bool, *C.char) {
+	k := C.GoString(hashKey)
 	exists, err := cgo.Handle(store).Value().(eventstrangler.Store).
 		Exists(k)
 	if err != nil {
@@ -100,9 +95,9 @@ func strangler_store_exists(store C.uintptr_t, hash_key *C.char) (bool, *C.char)
 	return exists, nil
 }
 
-//export strangler_store_get
-func strangler_store_get(store C.uintptr_t, hash_key *C.char) (*C.struct_strangler_record, *C.char) {
-	k := C.GoString(hash_key)
+//export EventStranglerStoreGet
+func EventStranglerStoreGet(store C.uintptr_t, hashKey *C.char) (*C.struct_EventStranglerRecord, *C.char) {
+	k := C.GoString(hashKey)
 	record, err := cgo.Handle(store).Value().(eventstrangler.Store).
 		Get(k)
 	if err != nil {
@@ -111,24 +106,25 @@ func strangler_store_get(store C.uintptr_t, hash_key *C.char) (*C.struct_strangl
 	return RecordToCType(record), nil
 }
 
-//export strangler_store_put
-func strangler_store_put(store C.uintptr_t, hash_key *C.char, record *C.struct_strangler_record, time_to_live int) *C.char {
-	k := C.GoString(hash_key)
+//export EventStranglerStorePut
+func EventStranglerStorePut(store C.uintptr_t, hashKey *C.char, record *C.struct_EventStranglerRecord,
+	timeToLive int) *C.char {
+	k := C.GoString(hashKey)
 	r, err := RecordToGoType(record)
 	if err != nil {
 		return C.CString(err.Error())
 	}
 	err = cgo.Handle(store).Value().(eventstrangler.Store).
-		Put(k, r, time_to_live)
+		Put(k, r, timeToLive)
 	if err != nil {
 		return C.CString(err.Error())
 	}
 	return nil
 }
 
-//export strangler_store_delete
-func strangler_store_delete(store C.uintptr_t, hash_key *C.char) *C.char {
-	k := C.GoString(hash_key)
+//export EventStranglerStoreDelete
+func EventStranglerStoreDelete(store C.uintptr_t, hashKey *C.char) *C.char {
+	k := C.GoString(hashKey)
 	err := cgo.Handle(store).Value().(eventstrangler.Store).
 		Delete(k)
 	if err != nil {
@@ -137,8 +133,8 @@ func strangler_store_delete(store C.uintptr_t, hash_key *C.char) *C.char {
 	return nil
 }
 
-//export strangler_store_close
-func strangler_store_close(store C.uintptr_t) *C.char {
+//export EventStranglerStoreClose
+func EventStranglerStoreClose(store C.uintptr_t) *C.char {
 	err := cgo.Handle(store).Value().(eventstrangler.Store).
 		Close()
 	if err != nil {
@@ -147,52 +143,48 @@ func strangler_store_close(store C.uintptr_t) *C.char {
 	return nil
 }
 
-func HashKeyOptionsToCType(opt *eventstrangler.HashKeyOptions) *C.struct_strangler_hash_key_options {
-	result := (*C.struct_strangler_hash_key_options)(C.malloc(C.size_t(unsafe.Sizeof(C.struct_strangler_hash_key_options{}))))
-	result.name = C.CString(opt.Name)
-	result.expression = C.CString(opt.Expression)
+func HashKeyOptionsToCType(hashKeyOptions *eventstrangler.HashKeyOptions) *C.struct_EventStranglerHashKeyOptions {
+	result := (*C.struct_EventStranglerHashKeyOptions)(
+		C.malloc(C.size_t(unsafe.Sizeof(C.struct_EventStranglerHashKeyOptions{}))))
+	result.Name = C.CString(hashKeyOptions.Name)
+	result.Expression = C.CString(hashKeyOptions.Expression)
 	return result
 }
 
-func HashKeyOptionsToGoType(opt *C.struct_strangler_hash_key_options) *eventstrangler.HashKeyOptions {
+func HashKeyOptionsToGoType(hashKeyOptions *C.struct_EventStranglerHashKeyOptions) *eventstrangler.HashKeyOptions {
 	return &eventstrangler.HashKeyOptions{
-		Name:       C.GoString(opt.name),
-		Expression: C.GoString(opt.expression),
+		Name:       C.GoString(hashKeyOptions.Name),
+		Expression: C.GoString(hashKeyOptions.Expression),
 	}
 }
 
-//export strangler_hash_key_options_free
-func strangler_hash_key_options_free(opt *C.struct_strangler_hash_key_options) {
-	C.free(unsafe.Pointer(opt))
-}
-
-func ConfigToCType(opt *eventstrangler.Config) *C.struct_strangler_config {
-	if opt == nil {
+func ConfigToCType(config *eventstrangler.Config) *C.struct_EventStranglerConfig {
+	if config == nil {
 		return nil
 	}
-	result := (*C.struct_strangler_config)(C.malloc(C.size_t(unsafe.Sizeof(C.struct_strangler_config{}))))
-	if opt.HashKey != nil {
-		result.hash_key = HashKeyOptionsToCType(opt.HashKey)
+	result := (*C.struct_EventStranglerConfig)(C.malloc(C.size_t(unsafe.Sizeof(C.struct_EventStranglerConfig{}))))
+	if config.HashKey != nil {
+		result.HashKey = HashKeyOptionsToCType(config.HashKey)
 	}
 	return result
 }
 
-func ConfigToGoType(opt *C.struct_strangler_config) *eventstrangler.Config {
-	if opt == nil {
+func ConfigToGoType(config *C.struct_EventStranglerConfig) *eventstrangler.Config {
+	if config == nil {
 		return nil
 	}
 	result := &eventstrangler.Config{}
-	if opt.hash_key != nil {
-		result.HashKey = HashKeyOptionsToGoType(opt.hash_key)
+	if config.HashKey != nil {
+		result.HashKey = HashKeyOptionsToGoType(config.HashKey)
 	}
-	if opt.store != C.uintptr_t(0) {
-		result.Store = cgo.Handle(opt.store).Value().(eventstrangler.Store)
+	if config.Store != C.uintptr_t(0) {
+		result.Store = cgo.Handle(config.Store).Value().(eventstrangler.Store)
 	}
 	return result
 }
 
-//export strangler_new
-func strangler_new(config *C.struct_strangler_config) (C.uintptr_t, *C.char) {
+//export EventStranglerNew
+func EventStranglerNew(config *C.struct_EventStranglerConfig) (C.uintptr_t, *C.char) {
 	c := ConfigToGoType(config)
 	result, err := eventstrangler.New(c)
 	if err != nil {
@@ -201,14 +193,14 @@ func strangler_new(config *C.struct_strangler_config) (C.uintptr_t, *C.char) {
 	return C.uintptr_t(cgo.NewHandle(result)), nil
 }
 
-//export strangler_free
-func strangler_free(strangler C.uintptr_t) {
+//export EventStranglerFree
+func EventStranglerFree(strangler C.uintptr_t) {
 	cgo.Handle(strangler).Delete()
 }
 
-//export strangler_complete
-func strangler_complete(strangler C.uintptr_t, hash_key *C.char) *C.char {
-	k := C.GoString(hash_key)
+//export EventStranglerComplete
+func EventStranglerComplete(strangler C.uintptr_t, hashKey *C.char) *C.char {
+	k := C.GoString(hashKey)
 	err := cgo.Handle(strangler).Value().(*eventstrangler.Strangler).
 		Complete(k)
 	if err != nil {
@@ -217,9 +209,9 @@ func strangler_complete(strangler C.uintptr_t, hash_key *C.char) *C.char {
 	return nil
 }
 
-//export strangler_purge
-func strangler_purge(strangler C.uintptr_t, hash_key *C.char) *C.char {
-	k := C.GoString(hash_key)
+//export EventStranglerPurge
+func EventStranglerPurge(strangler C.uintptr_t, hashKey *C.char) *C.char {
+	k := C.GoString(hashKey)
 	err := cgo.Handle(strangler).Value().(*eventstrangler.Strangler).
 		Purge(k)
 	if err != nil {

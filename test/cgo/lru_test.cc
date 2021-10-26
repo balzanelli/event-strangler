@@ -2,83 +2,83 @@
 #include "event_strangler.h"
 #include "include.h"
 
-TEST(strangler_lru_cache_store, strangler_lru_cache_store_new) {
-  const auto store = strangler_lru_cache_store_new();
-  strangler_lru_cache_store_free(store);
+TEST(EventStranglerLRUCacheStore, EventStranglerLRUCacheStoreNew) {
+  const auto store = EventStranglerLRUCacheStoreNew();
+  EventStranglerLRUCacheStoreFree(store);
   ASSERT_NE(store, 0);
 }
 
-TEST(strangler_lru_cache_store, strangler_lru_cache_store_put) {
-  const auto store = strangler_lru_cache_store_new();
+TEST(EventStranglerLRUCacheStore, EventStranglerLRUCacheStorePut) {
+  const auto store = EventStranglerLRUCacheStoreNew();
 
-  auto record = strangler_record{
-      .hash_key = kHashKey,
-      .status = kRecordStatus,
-      .created_at = const_cast<char*>("2021-01-01T00:00:00Z"),
-      .expires_at = const_cast<char*>("2021-01-01T00:00:00Z"),
+  auto record = EventStranglerRecord{
+      .HashKey = kHashKey,
+      .Status = kRecordStatus,
+      .CreatedAt = const_cast<char*>("2021-01-01T00:00:00Z"),
+      .ExpiresAt = const_cast<char*>("2021-01-01T00:00:00Z"),
   };
-  const auto err = strangler_store_put(store, kHashKey, &record, 0);
-  strangler_lru_cache_store_free(store);
+  const auto err = EventStranglerStorePut(store, kHashKey, &record, 0);
+  EventStranglerLRUCacheStoreFree(store);
 
   ASSERT_EQ(err, nullptr);
 }
 
-TEST(strangler_lru_cache_store, strangler_lru_cache_store_get) {
-  const auto store = strangler_lru_cache_store_new();
+TEST(EventStranglerLRUCacheStore, EventStranglerLRUCacheStoreGet) {
+  const auto store = EventStranglerLRUCacheStoreNew();
 
-  auto record = strangler_record{
-      .hash_key = kHashKey,
-      .status = kRecordStatus,
-      .created_at = const_cast<char*>("2021-01-01T00:00:00Z"),
-      .expires_at = const_cast<char*>("2021-01-01T00:00:00Z"),
+  auto record = EventStranglerRecord{
+      .HashKey = kHashKey,
+      .Status = kRecordStatus,
+      .CreatedAt = const_cast<char*>("2021-01-01T00:00:00Z"),
+      .ExpiresAt = const_cast<char*>("2021-01-01T00:00:00Z"),
   };
-  const auto err = strangler_store_put(store, kHashKey, &record, 0);
+  const auto err = EventStranglerStorePut(store, kHashKey, &record, 0);
   if (err) {
-    strangler_lru_cache_store_free(store);
+    EventStranglerLRUCacheStoreFree(store);
     ASSERT_EQ(err, nullptr);
   }
 
-  const auto result = strangler_store_get(store, kHashKey);
+  const auto result = EventStranglerStoreGet(store, kHashKey);
   if (result.r1) {
-    strangler_lru_cache_store_free(store);
+    EventStranglerLRUCacheStoreFree(store);
     ASSERT_EQ(result.r1, nullptr);
   }
-  strangler_lru_cache_store_free(store);
+  EventStranglerLRUCacheStoreFree(store);
   ASSERT_NE(result.r0, nullptr);
-  ASSERT_STREQ(result.r0->hash_key, kHashKey);
-  ASSERT_STREQ(result.r0->status, kRecordStatus);
+  ASSERT_STREQ(result.r0->HashKey, kHashKey);
+  ASSERT_STREQ(result.r0->Status, kRecordStatus);
 }
 
-TEST(strangler_lru_cache_store, strangler_lru_cache_store_delete) {
-  const auto store = strangler_lru_cache_store_new();
+TEST(EventStranglerLRUCacheStore, EventStranglerLRUCacheStoreDelete) {
+  const auto store = EventStranglerLRUCacheStoreNew();
 
-  auto record = strangler_record{
-      .hash_key = kHashKey,
-      .status = kRecordStatus,
-      .created_at = const_cast<char*>("2021-01-01T00:00:00Z"),
-      .expires_at = const_cast<char*>("2021-01-01T00:00:00Z"),
+  auto record = EventStranglerRecord{
+      .HashKey = kHashKey,
+      .Status = kRecordStatus,
+      .CreatedAt = const_cast<char*>("2021-01-01T00:00:00Z"),
+      .ExpiresAt = const_cast<char*>("2021-01-01T00:00:00Z"),
   };
-  auto err = strangler_store_put(store, kHashKey, &record, 0);
+  auto err = EventStranglerStorePut(store, kHashKey, &record, 0);
   if (err) {
-    strangler_lru_cache_store_free(store);
+    EventStranglerLRUCacheStoreFree(store);
     ASSERT_EQ(err, nullptr);
   }
 
-  err = strangler_store_delete(store, kHashKey);
+  err = EventStranglerStoreDelete(store, kHashKey);
   if (err) {
-    strangler_lru_cache_store_free(store);
+    EventStranglerLRUCacheStoreFree(store);
     ASSERT_EQ(err, nullptr);
   }
-  strangler_lru_cache_store_free(store);
+  EventStranglerLRUCacheStoreFree(store);
 }
 
-TEST(strangler_lru_cache_store, strangler_lru_cache_store_close) {
-  const auto store = strangler_lru_cache_store_new();
+TEST(EventStranglerLRUCacheStore, EventStranglerLRUCacheStoreClose) {
+  const auto store = EventStranglerLRUCacheStoreNew();
 
-  const auto err = strangler_store_close(store);
+  const auto err = EventStranglerStoreClose(store);
   if (err) {
-    strangler_lru_cache_store_free(store);
+    EventStranglerLRUCacheStoreFree(store);
     ASSERT_EQ(err, nullptr);
   }
-  strangler_lru_cache_store_free(store);
+  EventStranglerLRUCacheStoreFree(store);
 }

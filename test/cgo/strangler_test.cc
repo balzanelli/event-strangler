@@ -2,67 +2,67 @@
 #include "event_strangler.h"
 #include "include.h"
 
-TEST(strangler, strangler_new) {
-  const auto store = strangler_lru_cache_store_new();
+TEST(EventStrangler, EventStranglerNew) {
+  const auto store = EventStranglerLRUCacheStoreNew();
 
-  auto hash_key_options = strangler_hash_key_options{
-      .name = kHashKeyName,
-      .expression = kHashKeyExpression,
+  auto hash_key_options = EventStranglerHashKeyOptions{
+      .Name = kHashKeyName,
+      .Expression = kHashKeyExpression,
   };
-  auto config = strangler_config{
-      .hash_key = &hash_key_options,
-      .store = store,
+  auto config = EventStranglerConfig{
+      .HashKey = &hash_key_options,
+      .Store = store,
   };
-  const auto result = strangler_new(&config);
+  const auto result = EventStranglerNew(&config);
   if (result.r1) {
-    strangler_lru_cache_store_free(store);
+    EventStranglerLRUCacheStoreFree(store);
     ASSERT_EQ(result.r1, nullptr);
   }
-  strangler_lru_cache_store_free(store);
+  EventStranglerLRUCacheStoreFree(store);
   ASSERT_NE(result.r0, 0);
 }
 
-TEST(strangler, strangler_complete) {
-  const auto store = strangler_lru_cache_store_new();
+TEST(EventStrangler, EventStranglerComplete) {
+  const auto store = EventStranglerLRUCacheStoreNew();
 
-  auto hash_key_options = strangler_hash_key_options{
-      .name = kHashKeyName,
-      .expression = kHashKeyExpression,
+  auto hash_key_options = EventStranglerHashKeyOptions{
+      .Name = kHashKeyName,
+      .Expression = kHashKeyExpression,
   };
-  auto config = strangler_config{
-      .hash_key = &hash_key_options,
-      .store = store,
+  auto config = EventStranglerConfig{
+      .HashKey = &hash_key_options,
+      .Store = store,
   };
-  const auto result = strangler_new(&config);
+  const auto result = EventStranglerNew(&config);
   if (result.r1) {
-    strangler_lru_cache_store_free(store);
+    EventStranglerLRUCacheStoreFree(store);
     ASSERT_EQ(result.r1, nullptr);
   }
 
-  auto record = strangler_record{
-      .hash_key = kHashKey,
-      .status = kRecordStatus,
-      .created_at = const_cast<char*>("2021-01-01T00:00:00Z"),
-      .expires_at = const_cast<char*>("2021-01-01T00:00:00Z"),
+  auto record = EventStranglerRecord{
+      .HashKey = kHashKey,
+      .Status = kRecordStatus,
+      .CreatedAt = const_cast<char*>("2021-01-01T00:00:00Z"),
+      .ExpiresAt = const_cast<char*>("2021-01-01T00:00:00Z"),
   };
-  auto err = strangler_store_put(store, kHashKey, &record, 0);
+  auto err = EventStranglerStorePut(store, kHashKey, &record, 0);
   if (err) {
-    strangler_free(result.r0);
-    strangler_lru_cache_store_free(store);
+    EventStranglerFree(result.r0);
+    EventStranglerLRUCacheStoreFree(store);
     ASSERT_STREQ(err, "");
   }
-  err = strangler_complete(result.r0, kHashKey);
+  err = EventStranglerComplete(result.r0, kHashKey);
   if (result.r1) {
-    strangler_free(result.r0);
-    strangler_lru_cache_store_free(store);
+    EventStranglerFree(result.r0);
+    EventStranglerLRUCacheStoreFree(store);
     ASSERT_EQ(err, nullptr);
   }
-  const auto r = strangler_store_get(store, kHashKey);
+  const auto r = EventStranglerStoreGet(store, kHashKey);
   if (r.r1) {
-    strangler_free(result.r0);
-    strangler_lru_cache_store_free(store);
+    EventStranglerFree(result.r0);
+    EventStranglerLRUCacheStoreFree(store);
     ASSERT_EQ(err, nullptr);
   }
-  ASSERT_STREQ(r.r0->hash_key, kHashKey);
-  ASSERT_STREQ(r.r0->status, "COMPLETE");
+  ASSERT_STREQ(r.r0->HashKey, kHashKey);
+  ASSERT_STREQ(r.r0->Status, "COMPLETE");
 }
