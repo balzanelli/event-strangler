@@ -5,7 +5,7 @@ from .store import Store
 
 
 @contextmanager
-def leveldb_store(file: str) -> Store:
+def get_leveldb_store(file: str) -> Store:
     result = bindings.LevelDBStoreNew(file)
     if result.r1:
         raise ValueError(result.r1)

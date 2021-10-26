@@ -5,9 +5,7 @@ from .hash_key import HashKeyOptions
 
 
 class Config:
-    def __init__(self,
-                 hash_key: Optional[HashKeyOptions] = None,
-                 store: Optional[Any] = None):
+    def __init__(self, hash_key: Optional[HashKeyOptions] = None, store: Optional[Any] = None):
         self.hash_key: Optional[HashKeyOptions] = hash_key
         self.store: Optional[Any] = store
 

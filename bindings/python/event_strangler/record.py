@@ -4,10 +4,7 @@ import bindings
 
 
 class Record:
-    def __init__(self,
-                 hash_key: Optional[str],
-                 status: Optional[str],
-                 created_at: Optional[str],
+    def __init__(self, hash_key: Optional[str], status: Optional[str], created_at: Optional[str],
                  expires_at: Optional[str]):
         self.hash_key: Optional[str] = hash_key
         self.status: Optional[str] = status
