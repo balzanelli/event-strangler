@@ -15,4 +15,4 @@ target_include_directories(${TARGET_NAME}
   PRIVATE ${EVENT_STRANGLER_INCLUDE_DIR}
   PRIVATE ${PYTHON_INCLUDE_PATH})
 swig_link_libraries(${TARGET_NAME} event_strangler ${PYTHON_LIBRARIES})
-set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME "event_strangler_binding")
+set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME "bindings")
