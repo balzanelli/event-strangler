@@ -24,25 +24,25 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 #include <stdint.h>
 #include <stdlib.h>
 
-struct strangler_record {
-  char* hash_key;
-  char* status;
-  char* created_at;
-  char* expires_at;
+struct EventStranglerRecord {
+  char* HashKey;
+  char* Status;
+  char* CreatedAt;
+  char* ExpiresAt;
 };
-typedef struct strangler_record strangler_record;
+typedef struct EventStranglerRecord EventStranglerRecord;
 
-struct strangler_hash_key_options {
-  char* name;
-  char* expression;
+struct EventStranglerHashKeyOptions {
+  char* Name;
+  char* Expression;
 };
-typedef struct strangler_hash_key_options strangler_hash_key_options;
+typedef struct EventStranglerHashKeyOptions EventStranglerHashKeyOptions;
 
-struct strangler_config {
-  strangler_hash_key_options* hash_key;
-  uintptr_t			  	    store;
+struct EventStranglerConfig {
+  EventStranglerHashKeyOptions* HashKey;
+  uintptr_t			  	      Store;
 };
-typedef struct strangler_config strangler_config;
+typedef struct EventStranglerConfig EventStranglerConfig;
 
 #line 1 "cgo-generated-wrapper"
 
@@ -94,45 +94,43 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern void strangler_record_free(struct strangler_record* record);
 
-/* Return type for strangler_leveldb_store_new */
-struct strangler_leveldb_store_new_return {
+/* Return type for EventStranglerLevelDBStoreNew */
+struct EventStranglerLevelDBStoreNew_return {
   uintptr_t r0;
   char* r1;
 };
-extern struct strangler_leveldb_store_new_return strangler_leveldb_store_new(char* filepath);
-extern void strangler_leveldb_store_free(uintptr_t leveldb);
-extern uintptr_t strangler_lru_cache_store_new();
-extern void strangler_lru_cache_store_free(uintptr_t lru);
+extern struct EventStranglerLevelDBStoreNew_return EventStranglerLevelDBStoreNew(char* filepath);
+extern void EventStranglerLevelDBStoreFree(uintptr_t levelDB);
+extern uintptr_t EventStranglerLRUCacheStoreNew();
+extern void EventStranglerLRUCacheStoreFree(uintptr_t lru);
 
-/* Return type for strangler_store_exists */
-struct strangler_store_exists_return {
+/* Return type for EventStranglerStoreExists */
+struct EventStranglerStoreExists_return {
   GoUint8 r0;
   char* r1;
 };
-extern struct strangler_store_exists_return strangler_store_exists(uintptr_t store, char* hash_key);
+extern struct EventStranglerStoreExists_return EventStranglerStoreExists(uintptr_t store, char* hashKey);
 
-/* Return type for strangler_store_get */
-struct strangler_store_get_return {
-  struct strangler_record* r0;
+/* Return type for EventStranglerStoreGet */
+struct EventStranglerStoreGet_return {
+  struct EventStranglerRecord* r0;
   char* r1;
 };
-extern struct strangler_store_get_return strangler_store_get(uintptr_t store, char* hash_key);
-extern char* strangler_store_put(uintptr_t store, char* hash_key, struct strangler_record* record, GoInt time_to_live);
-extern char* strangler_store_delete(uintptr_t store, char* hash_key);
-extern char* strangler_store_close(uintptr_t store);
-extern void strangler_hash_key_options_free(strangler_hash_key_options* opt);
+extern struct EventStranglerStoreGet_return EventStranglerStoreGet(uintptr_t store, char* hashKey);
+extern char* EventStranglerStorePut(uintptr_t store, char* hashKey, struct EventStranglerRecord* record, GoInt timeToLive);
+extern char* EventStranglerStoreDelete(uintptr_t store, char* hashKey);
+extern char* EventStranglerStoreClose(uintptr_t store);
 
-/* Return type for strangler_new */
-struct strangler_new_return {
+/* Return type for EventStranglerNew */
+struct EventStranglerNew_return {
   uintptr_t r0;
   char* r1;
 };
-extern struct strangler_new_return strangler_new(struct strangler_config* config);
-extern void strangler_free(uintptr_t strangler);
-extern char* strangler_complete(uintptr_t strangler, char* hash_key);
-extern char* strangler_purge(uintptr_t strangler, char* hash_key);
+extern struct EventStranglerNew_return EventStranglerNew(struct EventStranglerConfig* config);
+extern void EventStranglerFree(uintptr_t strangler);
+extern char* EventStranglerComplete(uintptr_t strangler, char* hashKey);
+extern char* EventStranglerPurge(uintptr_t strangler, char* hashKey);
 
 #ifdef __cplusplus
 }

@@ -9,16 +9,16 @@
 %ignore GoSlice;
 
 %include "event_strangler_lib.i"
-%include "event_strangler_leveldb_store.i"
 %include "event_strangler_record.i"
 %include "event_strangler_store.i"
+%include "event_strangler_leveldb_store.i"
 
-%newobject strangler_new;
-%newobject strangler_complete;
-%newobject strangler_purge;
+%newobject EventStranglerNew;
+%newobject EventStranglerComplete;
+%newobject EventStranglerPurge;
 
-%extend strangler_new_return {
-  ~strangler_new_return() {
+%extend EventStranglerNew_return {
+  ~EventStranglerNew_return() {
     free($self->r1);
   }
 }

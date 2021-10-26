@@ -1,7 +1,7 @@
-%newobject strangler_leveldb_store_new;
+%newobject EventStranglerLevelDBStoreNew;
 
-%extend strangler_leveldb_store_new_return {
-  ~strangler_leveldb_store_new_return() {
+%extend EventStranglerLevelDBStoreNew_return {
+  ~EventStranglerLevelDBStoreNew_return() {
     free($self->r1);
   }
 }
