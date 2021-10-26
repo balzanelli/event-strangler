@@ -6,12 +6,14 @@ import event_strangler.strangler
 HASH_KEY = "d260350bd70e2dd5bd6b1e9b1047f58b9b58e5ed2eb912081d1f902a1370bfdc"
 
 with event_strangler.lru.get_lru_cache_store() as store:
-    hash_key_options = event_strangler.hash_key.HashKeyOptions(
+    hash_key_opt = event_strangler.hash_key.HashKeyOptions(
         name="event-strangler/tests/python",
         expression="[subject, transaction_id]",
     )
 
-    with event_strangler.strangler.build(event_strangler.strangler.Config(hash_key_options, store)) as strangler:
+    with event_strangler.strangler.build(
+            event_strangler.strangler.Config(hash_key_opt, store)
+    ) as strangler:
         store.put(HASH_KEY, event_strangler.record.Record(
             hash_key=HASH_KEY,
             status="PROCESSING",

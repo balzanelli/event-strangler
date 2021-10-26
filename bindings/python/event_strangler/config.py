@@ -1,23 +1,19 @@
-from contextlib import contextmanager
+from typing import Any, Optional
 
-import event_strangler_binding
-from .hash_key import HashKeyOptions, _get_hash_key_options
-from .store import Store
+import bindings
+from .hash_key import HashKeyOptions
 
 
 class Config:
-    def __init__(self, hash_key_options: HashKeyOptions, store: Store):
-        self.hash_key_options = hash_key_options
-        self.store = store
+    def __init__(self,
+                 hash_key: Optional[HashKeyOptions] = None,
+                 store: Optional[Any] = None):
+        self.hash_key: Optional[HashKeyOptions] = hash_key
+        self.store: Optional[Any] = store
 
-
-@contextmanager
-def _get_config(config: Config) -> event_strangler_binding.strangler_config:
-    result = event_strangler_binding.strangler_config()
-    try:
-        with _get_hash_key_options(config.hash_key_options) as hash_key_options:
-            result.hash_key = hash_key_options
-            result.store = config.store.c_uintptr
-            yield result
-    finally:
-        pass
+    @staticmethod
+    def to_binding(model) -> bindings.Config:
+        result = bindings.Config()
+        result.HashKey = HashKeyOptions.to_binding(model.hash_key)
+        result.Store = model.store.c_uintptr
+        return result

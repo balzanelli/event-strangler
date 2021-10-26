@@ -1,13 +1,13 @@
 from contextlib import contextmanager
 
-import event_strangler_binding
+import bindings
 from .store import Store
 
 
 @contextmanager
 def get_lru_cache_store() -> Store:
-    result = event_strangler_binding.strangler_lru_cache_store_new()
+    result = bindings.LRUCacheStoreNew()
     try:
         yield Store(result)
     finally:
-        event_strangler_binding.strangler_lru_cache_store_free(result)
+        bindings.LRUCacheStoreFree(result)
