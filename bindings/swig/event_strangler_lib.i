@@ -95,6 +95,14 @@ extern "C" {
 #endif
 
 
+/* Return type for EventStranglerDynamoDBStoreNew */
+struct EventStranglerDynamoDBStoreNew_return {
+  uintptr_t r0;
+  char* r1;
+};
+extern struct EventStranglerDynamoDBStoreNew_return EventStranglerDynamoDBStoreNew(char* tableName, char* profile);
+extern void EventStranglerDynamoDBStoreFree(uintptr_t dynamoDB);
+
 /* Return type for EventStranglerLevelDBStoreNew */
 struct EventStranglerLevelDBStoreNew_return {
   uintptr_t r0;
