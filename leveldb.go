@@ -29,11 +29,11 @@ func (s *LevelDBStore) Get(hashKey string) (*Record, error) {
 }
 
 func (s *LevelDBStore) Put(hashKey string, record *Record, _ int) error {
-	serialized, err := json.Marshal(record)
+	item, err := json.Marshal(record)
 	if err != nil {
 		return err
 	}
-	return s.db.Put([]byte(hashKey), serialized, nil)
+	return s.db.Put([]byte(hashKey), item, nil)
 }
 
 func (s *LevelDBStore) Delete(hashKey string) error {

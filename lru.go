@@ -10,10 +10,10 @@ type LRUCacheStore struct {
 
 func (s *LRUCacheStore) Exists(hashKey string) (bool, error) {
 	_, err := s.Get(hashKey)
-	if _, ok := err.(StoreEventNotFoundError); ok {
-		return false, nil
-	}
 	if err != nil {
+		if _, ok := err.(StoreEventNotFoundError); ok {
+			return false, nil
+		}
 		return false, err
 	}
 	return true, nil
