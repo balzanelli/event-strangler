@@ -58,14 +58,30 @@ func RecordToGoType(record *C.struct_EventStranglerRecord) (*eventstrangler.Reco
 	}, nil
 }
 
-//export EventStranglerLevelDBStoreNew
-func EventStranglerLevelDBStoreNew(filepath *C.char) (C.uintptr_t, *C.char) {
-	f := C.GoString(filepath)
-	leveldb, err := eventstrangler.NewLevelDBStore(f)
+//export EventStranglerDynamoDBStoreNew
+func EventStranglerDynamoDBStoreNew(tableName *C.char, profile *C.char) (C.uintptr_t, *C.char) {
+	t := C.GoString(tableName)
+	p := C.GoString(profile)
+	dynamoDB, err := eventstrangler.NewDynamoDBStore(t, p)
 	if err != nil {
 		return C.uintptr_t(0), C.CString(err.Error())
 	}
-	return C.uintptr_t(cgo.NewHandle(leveldb)), nil
+	return C.uintptr_t(cgo.NewHandle(dynamoDB)), nil
+}
+
+//export EventStranglerDynamoDBStoreFree
+func EventStranglerDynamoDBStoreFree(dynamoDB C.uintptr_t) {
+	cgo.Handle(dynamoDB).Delete()
+}
+
+//export EventStranglerLevelDBStoreNew
+func EventStranglerLevelDBStoreNew(filepath *C.char) (C.uintptr_t, *C.char) {
+	f := C.GoString(filepath)
+	levelDB, err := eventstrangler.NewLevelDBStore(f)
+	if err != nil {
+		return C.uintptr_t(0), C.CString(err.Error())
+	}
+	return C.uintptr_t(cgo.NewHandle(levelDB)), nil
 }
 
 //export EventStranglerLevelDBStoreFree
